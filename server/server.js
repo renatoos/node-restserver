@@ -1,6 +1,7 @@
-require('../config/config');
+require('./config/config');
 
 const express = require('express');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -11,48 +12,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
  
-//const port = process.env.PORT || 3000
+app.use( require('./routes/user'));
 
-app.get('/', function (req, res) {
-  res.json('Hello World')
-})
 
-app.get('/user', function (req, res) {
-    res.json('get user');
- });
- 
-app.post('/user', function (req, res) {
+mongoose.connect('mongodb://192.168.163.131:27017/cafe', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}, (err, res) => {
+    if (err) throw err;
 
-    let body = req.body;
-    
-    if (body.name === undefined){
-        res.status(400).json({
-            ok: false,
-            message: 'Name is required'
-        });
-    }else{
-        res.json({
-            person : body,
-            name : body.name,
-            age: body.age,
-            email: body.email
-        });
-
-    }
-
-});
-
-app.put('/user/:id', function (req, res) {
-    let id = req.params.id;
-    res.json({
-        id
-    });
-});
-
-app.delete('/user', function (req, res) {
-    res.json('delete user');
+    console.log('Database online');
 });
 
 app.listen(process.env.PORT, () => {
     console.log(`Listening on port ${process.env.PORT}`);
 })
+
+
